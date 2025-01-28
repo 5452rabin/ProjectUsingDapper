@@ -1,0 +1,143 @@
+﻿@using Newtonsoft.Json;
+@model IEnumerable<Assignment.Models.AddEmployeeVM>
+@{
+    var departmentsJson = TempData["DepartmentsArray"] as string;
+    IEnumerable<Department> departments = null;
+
+    if (departmentsJson != null)
+    {
+        departments = JsonConvert.DeserializeObject<IEnumerable<Department>>(departmentsJson);
+    }
+}
+<div class="container">
+    <div class="d-flex justify-content-between">
+    <h1>Table of Employee</h1>
+       
+        <a class="class=" btn" asp-controller="Home" asp-action="AddEmployee">
+            <i class="fa fa-plus"></i>
+        New Employee
+    </a>
+    </div>
+    <div class="d-flex mb-3">
+
+        <input class="form-control me-2 w-25" id="searchword" type="search" placeholder="SearchByName.."
+        @if (!string.IsNullOrEmpty(ViewBag.searchname))
+        {
+            <text>value="@ViewBag.searchname"</text>
+        }
+        
+        aria-label="Search">
+    <button class="btn btn-outline-success" id="searchbtn" type="submit">Search</button>
+    </div>
+    <div class="border border-1 rounded-1 w-100  ms-2 justify-content-center h-auto">
+      
+         <table class="table table-bordered table-striped" >
+            <thead>
+                <tr>
+                    <th style="width:25px;">S.N</th>
+                    <th class="w-25">Name</th>
+                    <th>Salary</th>
+                    <th class="w-25">
+                        <div class="d-flex justify-content-between">
+                        Department Name
+                        <select id="filterdepartment" style="width:100px;">
+                            <option value="0">All Department</option>
+                        @foreach(var item in departments)
+                        {
+                                    if (item.Id == ViewBag.selecteddepartmentid)
+                                    {
+                                        <option selected value="@item.Id">@item.Name</option>
+                                    }else
+                                    {
+                                        <option  value="@item.Id">@item.Name</option>
+                                    }
+
+                        }
+                        </select>
+                        </div>
+                    </th>
+                    <th>Joined At</th>
+                    <th class="w-25">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                @{
+                    int i = 1;
+                }
+                @foreach(var item in Model)
+                {
+                    <tr>
+                        <td>@i</td>
+                        <td>@item.Name</td>
+                        <td>@item.Salary</td>
+                        <td>@item.Department</td>
+                        <td>@item.DateofJoining.Year/@item.DateofJoining.Month/@item.DateofJoining.Day</td>
+                        <td>
+                            <a asp-action="AddEmployee" asp-controller="Home" asp-route-id="@item.EmployeeId" class="btn btn-info">Update</a>
+                            <a asp-action="DeleteEmployee" asp-controller="Home" asp-route-id="@item.EmployeeId" class=" btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                    i += 1;
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-center">
+            <nav>
+                <ul class="pagination">
+                    @if (ViewBag.PageNumber > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new {departmentid=ViewBag.selecteddepartmentid, searchname=ViewBag.searchname,page = ViewBag.PageNumber - 1 })">Previous</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    }
+                    @for (int j = 1; j <= ViewBag.TotalPages; j++)
+                    {
+                        <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new {departmentid=ViewBag.selecteddepartmentid, searchname=ViewBag.searchname,page = j })">@j</a>
+                        </li>
+                    }
+                    @if (ViewBag.PageNumber < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index",  new {departmentid=ViewBag.selecteddepartmentid, searchname=ViewBag.searchname,page = ViewBag.PageNumber + 1 })">Next</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#filterdepartment').change(function () {
+            var selectedDepartmentId = parseInt($(this).val(), 10);
+            var searchterm = $('#searchword').val();
+            window.location.href = '@Url.Action("Index", "Home")?departmentid=' + encodeURIComponent(selectedDepartmentId) +
+                '&searchname=' + encodeURIComponent(searchterm);
+
+        });
+        $('#searchbtn').click(function () { 
+            var searchterm = $('#searchword').val();
+            var selectedDepartmentId = parseInt($(this).val(), 10);
+            window.location.href = '@Url.Action("Index", "Home")?departmentid=' + encodeURIComponent(selectedDepartmentId) +
+                '&searchname=' + encodeURIComponent(searchterm);
+
+        
+        });
+    });
+
+</script>

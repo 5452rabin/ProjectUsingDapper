@@ -1,0 +1,49 @@
+﻿@model Assignment.Models.DepartmentVM
+
+<div class="container d-flex">
+    <div class="w-50 border border-1 rounded-1 d-flex justify-content-center m-2 p-5">
+    <form asp-controller="Department" asp-action="AddDepartment" method="post">
+        <div class="mb-3">
+            <label for="@Model.Name" class="form-label">Department Name</label>
+            <input id="name" type="text" class="form-control w-100" asp-for="@Model.Name" placeholder="Enter New Department" />
+            <span class="text-danger" asp-validation-for="@Model.Name"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div>
+    <div class="w-50 border border-1 rounded-1 d-flex justify-content-center m-2 p-5">
+        <div class="table-responsive w-100" style="max-height:450px;">
+
+        <table class="table table-bordered table-striped" >
+            <thead>
+                <tr>
+                    <th class="w-25">S.N</th>
+                    <th>Department Name</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                    @{
+                        int i = 1;
+                    }
+                    @foreach(var data in Model.Departments)
+                {
+                    <tr>
+                        <th>@i </th>
+                        <th>@data.Name</th>
+                        </tr>
+                        i += 1;
+                    }
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+       
+        });
+</script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
