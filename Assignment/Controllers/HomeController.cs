@@ -47,7 +47,7 @@ namespace Assignment.Controllers
                 }
             }
             int totalRecords = addEmployeeVMs.Count();
-            int totalPages = (int)Math.Ceiling((double)totalRecords / 10);
+            int totalPages = (int)Math.Ceiling((double)totalRecords / 6);
 
             var pagedEmployeeList = addEmployeeVMs
                 .Skip((pageNumber - 1) * pageSize)
