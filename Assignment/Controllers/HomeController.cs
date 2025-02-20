@@ -18,47 +18,17 @@ namespace Assignment.Controllers
             _logger = logger;
             _employeeService = employeeService;
         }
-        public async Task<IActionResult> Index(int departmentid, string searchname, int? page)
+        [HttpGet]
+        public async Task<IActionResult> GetAllEmployee()
         {
-            int pageSize = 6;
-            int pageNumber = (page ?? 1); 
-            IEnumerable<Department> departmentVMs = await _departmentService.getalldepartment();
-            TempData["DepartmentsArray"] = JsonConvert.SerializeObject(departmentVMs);
+            var result = await _employeeService.GetAll();
+            return Json(result);
+        }
 
-            IEnumerable<AddEmployeeVM> addEmployeeVMs;
 
-            if (departmentid != 0)
-            {
-                addEmployeeVMs = await _employeeService.GetEmployeeBydepartmentid(departmentid);
-                ViewBag.selecteddepartmentid = departmentid;
-                if (!string.IsNullOrEmpty(searchname))
-                {
-                    addEmployeeVMs = addEmployeeVMs.Where(emp => emp.Name.Contains(searchname, StringComparison.OrdinalIgnoreCase));
-                    ViewBag.searchname = searchname;
-                }
-            }
-            else
-            {
-                addEmployeeVMs = await _employeeService.GetAll();
-                if (!string.IsNullOrEmpty(searchname))
-                {
-                    addEmployeeVMs = addEmployeeVMs.Where(emp => emp.Name.Contains(searchname, StringComparison.OrdinalIgnoreCase));
-                    ViewBag.searchname = searchname;
-                }
-            }
-            int totalRecords = addEmployeeVMs.Count();
-            int totalPages = (int)Math.Ceiling((double)totalRecords / 6);
-
-            var pagedEmployeeList = addEmployeeVMs
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-            ViewBag.PageNumber = pageNumber;
-            ViewBag.PageSize = pageSize;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.TotalRecords = totalRecords;
-
-            return View(pagedEmployeeList);
+        public async Task<IActionResult> Index()
+        {
+            return View();
         }
         [HttpGet]
         public async Task<IActionResult> AddEmployee(int id)
